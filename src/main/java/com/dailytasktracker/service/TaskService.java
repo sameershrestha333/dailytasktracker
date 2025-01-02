@@ -1,5 +1,6 @@
 package com.dailytasktracker.service;
 
+import com.dailytasktracker.model.Account;
 import com.dailytasktracker.model.Task;
 import com.dailytasktracker.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +37,9 @@ public class TaskService {
 
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
+    }
+
+    public List<Task> saveTasks(List<Task> tasks) {
+        return taskRepository.saveAll(tasks);  // This will save all tasks in the list
     }
 }

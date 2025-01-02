@@ -3,6 +3,7 @@ package com.dailytasktracker.controller;
 import com.dailytasktracker.model.Account;
 import com.dailytasktracker.model.Task;
 import com.dailytasktracker.service.AccountService;
+import com.dailytasktracker.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -17,6 +19,9 @@ public class AccountController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private TaskService taskService;
 
     @GetMapping
     public List<Account> getAllAccounts() {
@@ -57,5 +62,27 @@ public class AccountController {
     @DeleteMapping("/{accountId}/tasks")
     public void removeTasksFromAccount(@PathVariable Long accountId, @RequestBody List<Long> taskIds) {
         accountService.removeTasksFromAccount(accountId, taskIds);
+    }
+
+    @PostMapping("/{accountId}/tasks")
+    public ResponseEntity<?> createTasksForAccount(
+            @PathVariable Long accountId,
+            @RequestBody List<String> taskDescriptions) {
+
+        // Find the Account by ID
+        Optional<Account> account = accountService.getAccountById(accountId);
+        if (!account.isPresent()) {
+            return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+        }
+
+        // Create tasks and associate them with the Account
+        List<Task> tasks = taskDescriptions.stream()
+                .map(description -> new Task(description, account.get()))  // Create new Task with description and associated account
+                .collect(Collectors.toList());
+
+        // Save tasks in the database
+        List<Task> createdTasks = taskService.saveTasks(tasks);
+
+        return new ResponseEntity<>(createdTasks, HttpStatus.CREATED);
     }
 }
