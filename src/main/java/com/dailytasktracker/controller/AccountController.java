@@ -4,6 +4,8 @@ import com.dailytasktracker.model.Account;
 import com.dailytasktracker.model.Task;
 import com.dailytasktracker.service.AccountService;
 import com.dailytasktracker.service.TaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
     private AccountService accountService;
@@ -56,12 +60,21 @@ public class AccountController {
 
     @GetMapping("/{accountId}/tasks")
     public Account getAccountWithTasks(@PathVariable Long accountId) {
-        return accountService.getAccountWithTasks(accountId);
+        return accountService.getAccountWithTasks(accountId).get();
     }
 
     @DeleteMapping("/{accountId}/tasks")
-    public void removeTasksFromAccount(@PathVariable Long accountId, @RequestBody List<Long> taskIds) {
-        accountService.removeTasksFromAccount(accountId, taskIds);
+    public ResponseEntity<String>  removeTasksFromAccount(@PathVariable Long accountId, @RequestBody List<Long> taskIds) {
+        logger.info("removeTasksFromAccount : Received request to remove tasks with IDs: {} for account ID: {}", taskIds, accountId);
+
+        try {
+            accountService.removeTasksFromAccount(accountId, taskIds);
+            logger.info("removeTasksFromAccount: Successfully removed tasks with IDs: {} from account ID: {}", taskIds, accountId);
+            return ResponseEntity.ok("Tasks successfully removed from the account.");
+        } catch (Exception e) {
+            logger.error("removeTasksFromAccount : Error while removing tasks with IDs: {} from account ID: {}. Error: {}", taskIds, accountId, e.getMessage(), e);
+            return ResponseEntity.status(500).body("Error while removing tasks: " + e.getMessage());
+        }
     }
 
     @PostMapping("/{accountId}/tasks")
