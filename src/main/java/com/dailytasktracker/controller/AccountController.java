@@ -16,7 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -76,8 +78,12 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}/tasks")
-    public Account getAccountWithTasks(@PathVariable Long accountId) {
-        return accountService.getAccountWithTasks(accountId).get();
+    public ResponseEntity<Account> getAccountWithTasks(@PathVariable Long accountId) {
+        Optional<Account> account = accountService.getAccountWithTasks(accountId);
+        if (account.isPresent()) {
+            return ResponseEntity.ok(account.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @DeleteMapping("/{accountId}/tasks")
@@ -117,28 +123,32 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Map<String, String>>  login(@RequestBody LoginRequest loginRequest) {
         // Step 1: Retrieve the account based on email
         logger.info("login : Login attempt for email: {}", loginRequest.getEmail());
         Optional<Account> accountOptional = accountService.getAccountByEmail(loginRequest.getEmail());
+        Map<String, String> response = new HashMap<>();
 
         if (!accountOptional.isPresent()) {
             logger.warn("Account with email {} not found", loginRequest.getEmail());
-            return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+            response.put("message", "Account not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
         logger.info("Account with email {} found. Proceeding to password verification", loginRequest.getEmail());
         Account account = accountOptional.get();
 
         // Step 2: Compare the password using BCryptPasswordEncoder
         boolean isPasswordMatch = passwordEncoder.matches(loginRequest.getPassword(), account.getPassword());
-
         if (isPasswordMatch) {
             logger.info("Login successful for email: {}", loginRequest.getEmail());
             // Login successful, you can return a success message or JWT token (if using JWT for authentication)
-            return ResponseEntity.ok("Login successful");
+            response.put("message", "Login successful");
+            response.put("accountId", String.valueOf(account.getId()));
+            return ResponseEntity.ok(response);
         } else {
             logger.warn("Invalid password attempt for email: {}", loginRequest.getEmail());
-            return new ResponseEntity<>("Invalid password", HttpStatus.FORBIDDEN);
+            response.put("message", "Invalid credentials");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 }
