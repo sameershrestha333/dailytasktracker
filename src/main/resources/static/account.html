@@ -23,7 +23,7 @@
     <div class="card shadow-lg">
         <div class="card-header text-center bg-primary text-white">
             <h2>Welcome, {{ account.firstName }} {{ account.lastName }}!</h2>
-            <p class="mb-0">Account Email: {{ account.email }} | Phone: {{ account.phoneNumber }}</p>
+            <p class="mb-0">Account Email: {{ account.email }} </p>
         </div>
         <div class="card-body">
             <h4>Your Tasks:</h4>
@@ -31,16 +31,16 @@
                 <table class="table table-hover table-bordered">
                     <thead class="thead-dark">
                     <tr>
-                        <th>S.N.</th>
-                        <th>Date Created</th>
-                        <th>Description</th>
-                        <th>Is Completed ?</th>
+                        <th style="width: 1%;">S.N.</th>
+                        <th style="width: 10%;">Date Created</th>
+                        <th style="width: 60%;">Description</th>
+                        <th style="width: 1%;"> Done?</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="task in tasks">
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ task.dateCreated }}</td>
+                        <td>{{ task.dateCreated | date: "MMM d, h:mm a" }}</td>
                         <td>{{ task.description }}</td>
                         <td><input type="checkbox" ng-model="task.isCompleted" ng-change="updateTask(task)" /></td>
                     </tr>
