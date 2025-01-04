@@ -111,4 +111,8 @@ public class AccountService {
         account.getTaskList().removeAll(tasks);
         logger.info("removeTasksFromAccount/removeTasksFromAccountList : Removed {} tasks from account ID: {}", tasks.size(), account.getId());
     }
+
+    public Optional<Account> getAccountByEmail(String email) {
+        return accountRepository.findByEmail(email); // Assuming you have a method in your repository to find by email
+    }
 }

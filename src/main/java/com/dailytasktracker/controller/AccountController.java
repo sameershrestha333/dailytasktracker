@@ -1,6 +1,7 @@
 package com.dailytasktracker.controller;
 
 import com.dailytasktracker.model.Account;
+import com.dailytasktracker.model.LoginRequest;
 import com.dailytasktracker.model.Task;
 import com.dailytasktracker.service.AccountService;
 import com.dailytasktracker.service.TaskService;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +28,18 @@ public class AccountController {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
-    @Autowired
     private AccountService accountService;
 
-    @Autowired
     private TaskService taskService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public AccountController(AccountService accountService, TaskService taskService, PasswordEncoder passwordEncoder) {
+        this.accountService = accountService;
+        this.taskService = taskService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping
     public List<Account> getAllAccounts() {
@@ -45,6 +55,9 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<Account> createAccount(@RequestBody Account account) {
+        String encodedPassword = passwordEncoder.encode(account.getPassword());
+        account.setPassword(encodedPassword);
+
         Account createdAccount = accountService.createAccount(account);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
     }
@@ -101,5 +114,31 @@ public class AccountController {
         List<Task> createdTasks = taskService.saveTasks(tasks);
 
         return new ResponseEntity<>(createdTasks, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        // Step 1: Retrieve the account based on email
+        logger.info("login : Login attempt for email: {}", loginRequest.getEmail());
+        Optional<Account> accountOptional = accountService.getAccountByEmail(loginRequest.getEmail());
+
+        if (!accountOptional.isPresent()) {
+            logger.warn("Account with email {} not found", loginRequest.getEmail());
+            return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+        }
+        logger.info("Account with email {} found. Proceeding to password verification", loginRequest.getEmail());
+        Account account = accountOptional.get();
+
+        // Step 2: Compare the password using BCryptPasswordEncoder
+        boolean isPasswordMatch = passwordEncoder.matches(loginRequest.getPassword(), account.getPassword());
+
+        if (isPasswordMatch) {
+            logger.info("Login successful for email: {}", loginRequest.getEmail());
+            // Login successful, you can return a success message or JWT token (if using JWT for authentication)
+            return ResponseEntity.ok("Login successful");
+        } else {
+            logger.warn("Invalid password attempt for email: {}", loginRequest.getEmail());
+            return new ResponseEntity<>("Invalid password", HttpStatus.FORBIDDEN);
+        }
     }
 }

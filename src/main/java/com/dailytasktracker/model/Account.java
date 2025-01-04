@@ -24,6 +24,7 @@ public class Account {
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")
+    @Column(unique = true)
     private String email;
 
     @NotBlank(message = "Password is required")
