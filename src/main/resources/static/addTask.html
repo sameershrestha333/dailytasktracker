@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="taskTrackerApp">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Task - Daily Task Tracker</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+</head>
+<body ng-controller="AddTaskController" class="bg-light">
+<div class="container mt-5">
+  <div class="card shadow-lg">
+    <div class="card-header text-center bg-primary text-white">
+      <h2>Add New Tasks</h2>
+    </div>
+    <div class="card-body">
+      <form ng-submit="submitForm()">
+        <div ng-repeat="description in descriptions track by $index" class="form-group">
+          <input type="text" class="form-control" ng-model="descriptions[$index]" placeholder="Task Description" required />
+          <button type="button" ng-click="removeDescription($index)" class="btn btn-danger mt-2">Remove</button>
+        </div>
+
+        <button type="button" ng-click="addDescription()" class="btn btn-success mt-3">Add Another Task</button>
+        <button type="submit" class="btn btn-primary btn-block mt-3">Save Task(s)</button>
+      </form>
+      <button ng-click="goBack()" class="btn btn-secondary btn-block mt-3">Back to Account</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="js/addTask.js"></script>
+</body>
+</html>

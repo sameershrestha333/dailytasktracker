@@ -22,9 +22,6 @@ angular.module('taskTrackerApp', [])
       $window.location.href = "/index.html";  // Redirect to login
     }
 
-    $scope.addTask = function() {
-      alert('Add Task functionality coming soon!');
-    };
 
     $scope.logout = function() {
       localStorage.removeItem('accountId');
