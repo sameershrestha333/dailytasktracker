@@ -59,35 +59,6 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-<script>
-    angular.module('taskTrackerApp', [])
-      .controller('AccountController', function($scope, $http, $window) {
-        const accountId = localStorage.getItem('accountId');
-        if (accountId) {
-          $http.get('http://localhost:8080/api/accounts/' + accountId + '/tasks')
-            .then(function(response) {
-              console.log("Tasks fetched successfully:", response.data);
-              $scope.account = response.data;
-              $scope.tasks = response.data.taskList;
-            })
-            .catch(function(error) {
-              console.error("Failed to fetch tasks:", error);
-              alert('Failed to load tasks.');
-            });
-        } else {
-          alert('Account ID not found. Please log in again.');
-          $window.location.href = "/index.html";  // Redirect to login
-        }
-
-        $scope.addTask = function() {
-             $window.location.href = '/addTask.html';
-        };
-
-        $scope.logout = function() {
-          localStorage.removeItem('accountId');
-          $window.location.href = "/index.html";
-        };
-      });
-</script>
+<script src="js/account.js"></script>  <!-- Link the external account.js -->
 </body>
 </html>

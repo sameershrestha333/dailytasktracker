@@ -93,7 +93,8 @@ public class AccountController {
         try {
             accountService.removeTasksFromAccount(accountId, taskIds);
             logger.info("removeTasksFromAccount: Successfully removed tasks with IDs: {} from account ID: {}", taskIds, accountId);
-            return ResponseEntity.ok("Tasks successfully removed from the account.");
+            //return ResponseEntity.ok("Tasks successfully removed from the account.");
+            return ResponseEntity.ok("{\"message\": \"Tasks successfully removed from the account.\"}");
         } catch (Exception e) {
             logger.error("removeTasksFromAccount : Error while removing tasks with IDs: {} from account ID: {}. Error: {}", taskIds, accountId, e.getMessage(), e);
             return ResponseEntity.status(500).body("Error while removing tasks: " + e.getMessage());
