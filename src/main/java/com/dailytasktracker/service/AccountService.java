@@ -66,7 +66,7 @@ public class AccountService {
         Account account = accountOptional.get();
 
         // Optionally, we can also manually fetch the tasks if you need additional processing
-        account.setTaskList(taskRepository.findByAccount(account));
+        account.setTaskList(taskRepository.findByAccountOrderByDateCreatedDesc(account));
 
         return Optional.of(account);  // Returning the account with its tasks
     }
