@@ -47,7 +47,7 @@ angular.module('taskTrackerApp', [])
            .then(function(response) {
                console.log("Task removed successfully:", response.data);
                // Optionally, refresh the task list or reload the page
-               alert(response.data.message);  // Show the success message from the backend
+               //alert(response.data.message);  // Show the success message from the backend
                $window.location.reload();  // Refresh to reflect the deletion
            })
            .catch(function(error) {
