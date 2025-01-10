@@ -39,6 +39,9 @@ public class AccountService {
     }
 
     public Account createAccount(Account account) {
+        if (account.getAccountType() == null) {
+            account.setAccountType(Account.AccountType.USER);
+        }
         return accountRepository.save(account);
     }
 

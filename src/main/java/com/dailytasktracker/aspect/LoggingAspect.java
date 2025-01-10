@@ -46,31 +46,4 @@ public class LoggingAspect {
         return result;
     }
 
-    /**
-     * Before advice to log before a method execution.
-     */
-    @Before("applicationPackagePointcut()")
-    public void logBefore(JoinPoint joinPoint) {
-        logger.info("Before Execution: {} | Arguments: {}",
-                joinPoint.getSignature(),
-                Arrays.toString(joinPoint.getArgs()));
-    }
-
-    /**
-     * AfterThrowing advice to log exceptions.
-     */
-    @AfterThrowing(pointcut = "applicationPackagePointcut()", throwing = "exception")
-    public void logAfterThrowing(JoinPoint joinPoint, Throwable exception) {
-        logger.error("Exception Thrown in Method: {} | Exception: {}",
-                joinPoint.getSignature(),
-                exception.getMessage());
-    }
-
-    /**
-     * AfterReturning advice to log method return values.
-     */
-    @AfterReturning(pointcut = "applicationPackagePointcut()", returning = "result")
-    public void logAfterReturning(JoinPoint joinPoint, Object result) {
-        logger.info("Method Return: {} | Result: {}", joinPoint.getSignature(), result);
-    }
 }
