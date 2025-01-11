@@ -9,19 +9,37 @@
 </head>
 <body ng-controller="SignInController">
 <div class="container d-flex align-items-center justify-content-center" style="height: 100vh;">
-  <div class="login-form p-4 shadow-sm rounded bg-white">
-    <h3 class="text-center">Sign In</h3>
-    <form ng-submit="submitForm()">
-      <div class="form-group">
-        <input type="email" ng-model="credentials.email" placeholder="Email" class="form-control" required />
+  <div class="row w-100">
+    <!-- Logo Section -->
+    <div class="col-md-6 d-flex justify-content-center align-items-center flex-column text-center">
+     <!-- <img src="images/logo1.png" alt="Daily Task Tracker Logo" class="img-fluid mb-4" />-->
+
+      <!-- Large Branding Text Above Description -->
+      <h1 class="brand-name">DailyTaskTracker</h1>
+
+      <!-- Description Below Large Branding -->
+      <p class="description-text">
+        A Daily Task Tracker helps you organize, prioritize, and track your tasks effortlessly. Boost your productivity, reduce stress, and stay focused throughout the day with ease. Plus, receive email notifications twice daily with your updated task list to keep you on track.
+      </p>
+    </div>
+
+    <!-- Sign-In Form Section -->
+    <div class="col-md-6">
+      <div class="login-form p-5 shadow-lg rounded-lg bg-white">
+        <h3 class="text-center text-primary mb-4">Sign In</h3>
+        <form ng-submit="submitForm()">
+          <div class="form-group">
+            <input type="email" ng-model="credentials.email" placeholder="Email" class="form-control form-control-lg" required />
+          </div>
+          <div class="form-group">
+            <input type="password" ng-model="credentials.password" placeholder="Password" class="form-control form-control-lg" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg">Sign In</button>
+        </form>
+        <div class="text-center mt-3">
+          <a href="signup.html" class="text-muted">Create an Account</a>
+        </div>
       </div>
-      <div class="form-group">
-        <input type="password" ng-model="credentials.password" placeholder="Password" class="form-control" required />
-      </div>
-      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-    </form>
-    <div class="text-center mt-3">
-      <a href="signup.html">Create an Account</a>
     </div>
   </div>
 </div>

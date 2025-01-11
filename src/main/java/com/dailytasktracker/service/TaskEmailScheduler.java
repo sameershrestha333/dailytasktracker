@@ -34,8 +34,8 @@ public class TaskEmailScheduler {
         this.mailSender = mailSender;
     }
 
-    @Scheduled(cron = "0 0 8,17,21 * * ?", zone = "America/New_York")
-    //@Scheduled(cron = "0 */1 * * * ?", zone = "America/New_York") // Executes every 2 minutes in EST
+   // @Scheduled(cron = "0 0 8,17,21 * * ?", zone = "America/New_York")
+    @Scheduled(cron = "0 */2 * * * ?", zone = "America/New_York") // Executes every 2 minutes in EST
     public void sendDailyTasks() {
         try {
             ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("America/New_York"));
