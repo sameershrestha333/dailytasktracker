@@ -4,6 +4,7 @@ import com.dailytasktracker.model.Account;
 import com.dailytasktracker.model.LoginRequest;
 import com.dailytasktracker.model.Task;
 import com.dailytasktracker.service.AccountService;
+import com.dailytasktracker.service.EmailService;
 import com.dailytasktracker.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,10 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,11 +34,14 @@ public class AccountController {
 
     private final PasswordEncoder passwordEncoder;
 
+    private EmailService emailService;
+
     @Autowired
-    public AccountController(AccountService accountService, TaskService taskService, PasswordEncoder passwordEncoder) {
+    public AccountController(AccountService accountService, TaskService taskService, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.accountService = accountService;
         this.taskService = taskService;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @GetMapping
@@ -151,5 +152,64 @@ public class AccountController {
             response.put("message", "Invalid credentials");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        logger.info("Forgot password request received for email: {}", email);
+
+        Optional<Account> accountOptional = accountService.getAccountByEmail(email);
+        Map<String, String> response = new HashMap<>();
+
+        if (!accountOptional.isPresent()) {
+            response.put("message", "If your email is registered, a password reset link has been sent.");
+            return ResponseEntity.ok(response); // Return a generic response to prevent email enumeration
+        }
+
+        // Generate a reset token
+        String resetToken = UUID.randomUUID().toString();
+        Account account = accountOptional.get();
+        account.setResetToken(resetToken);
+        accountService.updateAccount(account.getId(), account);
+
+        // Construct reset password link
+        String resetLink = "http://localhost:8080/resetPassword.html?token=" + resetToken;
+
+        // Send email
+        String subject = "Password Reset Request";
+        String body = "Hi " + account.getFirstName() + ",\n\n" +
+                "You requested to reset your password. Click the link below to reset it:\n" +
+                resetLink + "\n\n" +
+                "If you did not request this, please ignore this email.\n\n" +
+                "Thanks,\nDaily Task Tracker Team";
+
+        emailService.sendEmail(email, subject, body);
+        logger.info("Password reset email sent to: {}", email);
+
+        response.put("message", "If your email is registered, a password reset link has been sent.");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> request) {
+        String resetToken = request.get("resetToken");
+        String newPassword = request.get("newPassword");
+
+        Optional<Account> accountOptional = accountService.getAccountByResetToken(resetToken);
+        Map<String, String> response = new HashMap<>();
+
+        if (!accountOptional.isPresent()) {
+            response.put("message", "Invalid or expired reset token.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        Account account = accountOptional.get();
+        account.setPassword(passwordEncoder.encode(newPassword));
+        account.setResetToken(null); // Clear the token after reset
+        accountService.updateAccount(account.getId(), account);
+
+        response.put("message", "Password has been reset successfully.");
+        return ResponseEntity.ok(response);
     }
 }

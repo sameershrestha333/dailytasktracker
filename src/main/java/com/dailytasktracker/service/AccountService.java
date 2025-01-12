@@ -118,4 +118,8 @@ public class AccountService {
     public Optional<Account> getAccountByEmail(String email) {
         return accountRepository.findByEmail(email); // Assuming you have a method in your repository to find by email
     }
+
+    public Optional<Account> getAccountByResetToken(String token) {
+        return accountRepository.getAccountByResetToken(token); // Assuming you have a method in your repository to find by email
+    }
 }

@@ -20,7 +20,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 // Allow access to static files (index.html, login.html, css, js, images)
-                .antMatchers("/", "/index.html", "/login.html", "/account.html", "/signup.html","/account.html","/addTask.html","/css/**", "/js/**", "/img/**").permitAll()
+                .antMatchers("/", "/index.html", "/login.html", "/account.html", "/signup.html","/account.html"
+                        ,"/addTask.html"
+                        ,"/forgotPassword.html"
+                        ,"/resetPassword.html",
+                        "/css/**", "/js/**", "/img/**").permitAll()
                 // Allow access to API endpoints for login and account creation
                 .antMatchers("/api/**").permitAll()
                 // All other requests require authentication

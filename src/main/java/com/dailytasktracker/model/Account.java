@@ -49,6 +49,9 @@ public class Account {
     @JsonManagedReference  // Handle the serialization of Account -> Task
     private List<Task> taskList;
 
+    @Column(name = "reset_token")
+    private String resetToken;
+
     @Override
     public String toString() {
         return String.format("Account{id=%d, accountName='%s', email='%s', active=%b, accountType=%s, phoneNumber='%s', firstName='%s', lastName='%s'}",

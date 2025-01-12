@@ -7,8 +7,8 @@ import com.dailytasktracker.repository.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +34,8 @@ public class TaskEmailScheduler {
         this.mailSender = mailSender;
     }
 
-   // @Scheduled(cron = "0 0 8,17,21 * * ?", zone = "America/New_York")
-    @Scheduled(cron = "0 */2 * * * ?", zone = "America/New_York") // Executes every 2 minutes in EST
+    @Scheduled(cron = "0 0 8,17,21 * * ?", zone = "America/New_York")
+   // @Scheduled(cron = "0 */2 * * * ?", zone = "America/New_York") // Executes every 2 minutes in EST
     public void sendDailyTasks() {
         try {
             ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("America/New_York"));
