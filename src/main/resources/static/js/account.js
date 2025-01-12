@@ -67,4 +67,26 @@ angular.module('taskTrackerApp', [])
         localStorage.removeItem('accountId');
         $window.location.href = "/index.html";
     };
+
+         $scope.deactivateAccount = function() {
+             const accountId = $scope.account.id; // Use the dynamic account ID
+
+             // Ensure accountId is available
+             if (!accountId) {
+                 alert('Account ID is missing!');
+                 return;
+             }
+
+             // API Call to delete the account
+             $http.delete(`/api/accounts/${accountId}`)
+                 .then(function(response) {
+                     // Successfully deactivated account, handle accordingly
+                     alert('Account Deactivated!');
+                     window.location.href = '/index.html';  // Redirect after successful deactivation
+                 })
+                 .catch(function(error) {
+                     // Handle error
+                     alert('Error deactivating account');
+                 });
+         };
   });
